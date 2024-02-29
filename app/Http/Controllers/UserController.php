@@ -21,6 +21,14 @@ class UserController extends Controller
         // ];
         // UserModel::insert($data);
 
+        // $user = UserModel::all();
+        // return view('user', ['data' => $user]);
+
+        $data = [
+            'nama' => 'Pelanggan Pertama'
+        ];
+        UserModel::where('username', 'customer-1')->update($data);
+
         $user = UserModel::all();
         return view('user', ['data' => $user]);
     }
