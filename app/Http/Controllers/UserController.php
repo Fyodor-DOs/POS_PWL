@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\LevelModel;
 
 class UserController extends Controller
 {
@@ -108,8 +109,12 @@ class UserController extends Controller
         // $user->wasChanged('nama');
         // dd($user->wasChanged(['nama', 'username']));
 
-        $user = UserModel::all();
+        // $user = UserModel::all();
+        // return view('user', ['data' => $user]);
+
+        $user = UserModel::with('level')->get();
         return view('user', ['data' => $user]);
+        // dd($user);
     }
 
     public function tambah()
