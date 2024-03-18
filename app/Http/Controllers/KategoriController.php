@@ -15,4 +15,17 @@ class KategoriController extends Controller
     {
         return $dataTable->render('kategori.index');
     }
+    public function create()
+    {
+        return view('kategori.create');
+    }
+
+    public function store(Request $request)
+    {
+        KategoriModel::create([
+            'kategori_code' => $request->kodeKategori,
+            'kategori_nama' => $request->namaKategori,
+        ]);
+        return redirect('/kategori');
+    }
 }
