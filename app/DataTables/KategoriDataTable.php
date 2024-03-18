@@ -68,7 +68,7 @@ class KategoriDataTable extends DataTable
                   ->width(60)
                   ->addClass('text-center'), */
             Column::make('kategori_id'),
-            Column::make('kategori_kode'),
+            Column::make('kategori_code'),
             Column::make('kategori_nama'),
             Column::make('created_at'),
             Column::make('updated_at'),
