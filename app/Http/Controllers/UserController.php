@@ -7,6 +7,8 @@ use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\LevelModel;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class UserController extends Controller
 {
@@ -158,6 +160,26 @@ class UserController extends Controller
     {
         $user = UserModel::find($id);
         $user->delete();
+
+        return redirect('/user');
+    }
+
+
+    public function index(UserDataTable $dataTable)
+    {
+        return $dataTable->render('user.index');
+    }
+
+    public function create(): View
+    {
+        return view('user.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate();
+        $validated = $request->safe()->only(['level_id', 'username', 'nama', 'password']);
+        $validated = $request->safe()->except(['level_id', 'username', 'nama', 'password']);
 
         return redirect('/user');
     }
