@@ -317,7 +317,7 @@ return [
         ],
         [
             'text' => 'Manage Kategori',
-            'url' => url('/kategori'),
+            'url' => '/kategori',
             'icon' => 'fa fa-tags',
         ],
         [
