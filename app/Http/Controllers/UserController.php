@@ -165,22 +165,22 @@ class UserController extends Controller
     }
 
 
-    public function index(UserDataTable $dataTable)
-    {
-        return $dataTable->render('user.index');
-    }
+    // public function index(UserDataTable $dataTable)
+    // {
+    //     return $dataTable->render('user.index');
+    // }
 
-    public function create(): View
-    {
-        return view('user.create');
-    }
+    // public function create(): View
+    // {
+    //     return view('user.create');
+    // }
 
-    public function store(Request $request): RedirectResponse
-    {
-        $validated = $request->validate();
-        $validated = $request->safe()->only(['level_id', 'username', 'nama', 'password']);
-        $validated = $request->safe()->except(['level_id', 'username', 'nama', 'password']);
+    // public function store(Request $request): RedirectResponse
+    // {
+    //     $validated = $request->validate();
+    //     $validated = $request->safe()->only(['level_id', 'username', 'nama', 'password']);
+    //     $validated = $request->safe()->except(['level_id', 'username', 'nama', 'password']);
 
-        return redirect('/user');
-    }
+    //     return redirect('/user');
+    // }
 }
