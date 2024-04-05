@@ -11,13 +11,17 @@ class LevelModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'm_level';
-    protected $primaryKey = 'level_id';
+    protected $table = "m_level";
+    protected $primaryKey = "level_id";
+    protected $fillable = ['level_code', 'level_nama'];
 
-    protected $fillable = ['level_id', 'level_code', 'level_nama'];
-
-    public function user(): BelongsTo
+    public function users(): HasMany
     {
-        return $this->belongsTo(UserModel::class);
+        return $this->hasMany(User::class);
     }
+
+    // public function user(): BelongsTo
+    // {
+    //     return $this->belongsTo(UserModel::class);
+    // }
 }
