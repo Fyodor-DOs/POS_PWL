@@ -3,7 +3,7 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
+            <h3 class="card-title">{{$page->title}}</h3>
             <div class="card-tools"></div>
         </div>
         <div class="card-body">
@@ -16,33 +16,34 @@
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
                         <th>ID</th>
-                        <td>{{ $stok->stok_id }}</td>
+                        <td>{{$stok->stok_id}}</td>
                     </tr>
                     <tr>
-                        <th>Nama Barang</th>
-                        <td>{{ $stok->barang->barang_nama }}</td>
+                        <th>Nama</th>
+                        <td>{{$stok->barang->barang_nama}}</td>
                     </tr>
                     <tr>
-                        <th>PIC</th>
-                        <td>{{ $stok->user->username }}</td>
+                        <th>Tanggal Stok</th>
+                        <td>{{$stok->stok_tanggal}}</td>
                     </tr>
                     <tr>
-                        <th>Stok Tanggal</th>
-                        <td>{{ $stok->stok_tanggal }}</td>
+                        <th>Jumlah</th>
+                        <td>{{$stok->stok_jumlah}}</td>
                     </tr>
                     <tr>
-                        <th>Stok Jumlah</th>
-                        <td>{{ $stok->stok_jumlah }}</td>
+                        <th>Penyetok</th>
+                        <td>{{$stok->user->nama}}</td>
                     </tr>
                 </table>
             @endempty
-            <a href="{{ url('stok') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
+            <a href="{{url('stok')}}" class="btn btn-sm btn-default mt-2">Kembali</a>
         </div>
     </div>
 @endsection
 
 @push('css')
-@endpush
 
+@endpush
 @push('js')
+
 @endpush

@@ -49,7 +49,7 @@
                     @error('password')
                     <small class="form-text text-danger">{{ $message }}</small>
                     @else
-                    <small class="form-text text-muted">Abaikan (jangan diisi) jika tidak ingin mengganti password user.</small>
+                    <small class="form-text text-muted">*Tidak perlu diisi jika tidak ingin mengganti password user</small>
                     @enderror
                 </div>
             </div>

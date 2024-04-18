@@ -2,160 +2,148 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
-use App\Models\StokModel;
+
 use App\Models\BarangModel;
 use App\Models\UserModel;
+use App\Models\StokModel;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class StokController extends Controller
 {
     public function index()
     {
-        // Menampilkan halaman awal stok
         $breadcrumb = (object) [
             'title' => 'Daftar Stok',
-            'list' => ['Home', 'Stok']
+            'list' => ['Home', 'Stok'],
         ];
-
         $page = (object) [
-            'title' => 'Daftar Stok yang terdaftar dalam sistem'
+            'title' => 'Daftar Stok yang terdaftar dalam sistem',
         ];
 
-        $activeMenu = 'stok'; //set menu yang aktif
+        $activeMenu = 'stok';
 
-        $user = UserModel::all(); //ambil data user untuk filter user
+        $barang = BarangModel::all();
 
-        return view('stok.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'user' => $user]);
+        return view('stok.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'barang' => $barang]);
     }
-
-    // Ambil data stok dalam bentuk json untuk datatables
     public function list(Request $request)
     {
-        $stoks = StokModel::select('stok_id', 'barang_id', 'user_id', 'stok_tanggal', 'stok_jumlah')
-            ->with('barang')->with('user');
+        $stoks = StokModel::select('stok_id', 'barang_id', 'user_id', 'stok_tanggal', 'stok_jumlah')->with('barang')->with('user');
 
-        // Filter data stok berdasarkan user_id
-        if ($request->user_id) {
-            $stoks->where('user_id', $request->user_id);
+        if ($request->barang_id) {
+            $stoks->where('barang_id', $request->barang_id);
         }
 
         return DataTables::of($stoks)
-            ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
+            ->addIndexColumn()
             ->addColumn('aksi', function ($stok) {
-                $btn = '<a href="' . url('/stok/' . $stok->stok_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<a href="' . url('/stok/' . $stok->stok_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/stok/' . $stok->stok_id) . '">' .
-                    csrf_field() . method_field('DELETE') .
-                    '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
+                $btn = '<a href="' . url('/stok/' . $stok->stok_id) . '" class="btn btn-info btn-sm">Detail</a>';
+                $btn .= '<a href="' . url('/stok/' . $stok->stok_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a>';
+                $btn .= '<form class="d-inline-block" method="POST" action="' . url('/stok/' . $stok->stok_id) . '">' . csrf_field() . method_field('DELETE') . '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
-
-    // Menampilkan halaman form tambah
     public function create()
     {
-        $breadcrumb = (object) [
+        $breadcrumb = (object)[
             'title' => 'Tambah Stok',
             'list' => ['Home', 'Stok', 'Tambah']
         ];
-
-        $page = (object) [
-            'title' => 'Tambah Stok'
+        $page = (object)[
+            'title' => 'Tambah Stok Baru'
         ];
 
-        $activeMenu = 'stok'; //set menu yang aktif
-
-        $stok = StokModel::all();
-        $barang = BarangModel::all();
-        $username = UserModel::all();
-
-        return view('stok.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'stok' => $stok, 'barang' => $barang, 'user' => $username]);
+        $barang = BarangModel::all(); //ambil data untuk ditampilkan di form
+        $user = UserModel::all(); //ambil data untuk ditampilkan di form
+        $activeMenu = 'stok';
+        return view('stok.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'barang' => $barang, 'user' => $user, 'activeMenu' => $activeMenu]);
     }
-
-    // Menyimpan data stok baru
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'barang_id' => 'required|integer',
-            'user_id' => 'required|integer',
+        $validated = $request->validate([
+            'barang_id' => 'bail|required|integer',
             'stok_tanggal' => 'required|date',
-            'stok_jumlah' => 'required|integer|max:10',
+            'stok_jumlah' => 'required|integer',
+            'user_id' => 'required|integer',
         ]);
-        if (StokModel::find($request->barang_id)) {
-            $stok = StokModel::where('barang_id', $request->barang_id)->increment('stok_jumlah', $request->stok_jumlah);
-            return redirect('/stok')->with('success', 'Data stok barang sudah ditambah!');
-        } else {
-            StokModel::create($request->all());
-            return redirect('/stok')->with('success', 'Data stok berhasil ditambahkan!');
-        }
-    }
+        StokModel::create([
+            'barang_id' => $request->barang_id,
+            'stok_tanggal' => $request->stok_tanggal,
+            'stok_jumlah' => $request->stok_jumlah,
+            'user_id' => $request->user_id,
+        ]);
 
-    // Menampilkan detail stok
-    public function show($id)
+        return redirect('/stok')->with('success', 'Data Stok berhasil disimpan');
+    }
+    public function show(string $id)
     {
-        $stok = StokModel::with('barang')->with('user')->find($id);
-        $breadcrumb = (object) [
+        $stok = StokModel::find($id);
+
+        $breadcrumb = (object)[
             'title' => 'Detail Stok',
             'list' => ['Home', 'Stok', 'Detail']
         ];
-
-        $page = (object) [
+        $page = (object)[
             'title' => 'Detail Stok'
         ];
 
-        $activeMenu = 'stok'; //set menu yang aktif
+        $activeMenu = 'stok';
 
-        return view('stok.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'stok' => $stok]);
+        return view('stok.show', ['stok' => $stok, 'breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
-
-    // Menampilkan halaman form edit stok
-    public function edit($id)
+    public function edit(string $id)
     {
-        $stok = StokModel::with('barang')->with('user')->find($id);
-        $breadcrumb = (object) [
+        $stok = StokModel::find($id);
+        $barang = BarangModel::all();
+        $user = UserModel::all();
+
+        $breadcrumb = (object)[
             'title' => 'Edit Stok',
             'list' => ['Home', 'Stok', 'Edit']
         ];
-
-        $page = (object) [
+        $page = (object)[
             'title' => 'Edit Stok'
         ];
 
-        $activeMenu = 'stok'; //set menu yang aktif
-        $username = UserModel::all();
-        return view('stok.edit', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'stok' => $stok, 'user' => $username]);
-    }
+        $activeMenu = 'stok';
 
-    // Menyimpan perubahan data stok yg diedit
-    public function update(Request $request, $id)
+        return view('stok.edit', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'stok' => $stok, 'barang' => $barang, 'user' => $user]);
+    }
+    public function update(Request $request, string $id)
     {
         $request->validate([
-            'barang_id' => 'required|integer',
+            'barang_id' => 'bail|required|integer',
             'stok_tanggal' => 'required|date',
-            'stok_jumlah' => 'required|integer|max:10',
+            'stok_jumlah' => 'required|integer',
+            'user_id' => 'required|integer',
         ]);
 
-        StokModel::find($id)->update($request->all());
+        StokModel::find($id)->update([
+            'barang_id' => $request->barang_id,
+            'stok_tanggal' => $request->stok_tanggal,
+            'stok_jumlah' => $request->stok_jumlah,
+            'user_id' => $request->user_id,
+        ]);
 
-        return redirect('/stok')->with('status', 'Data stok berhasil diubah!');
+        return redirect('/stok')->with('success', 'Data stok berhasil diubah');
     }
-
-    // Menghapus data stok
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $check = StokModel::find($id);
         if (!$check) {
-            return redirect('/stok')->with('error', 'Data stok tidak ditemukan!');
+            return redirect('/stok')->with('error', 'Data stok tidak ditemukan');
         }
 
         try {
             StokModel::destroy($id);
-            return redirect('/stok')->with('success', 'Data stok berhasil dihapus!');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/stok')->with('error', 'Data stok gagal dihapus!' . $e->getMessage());
+
+            return redirect('/stok')->with('success', 'Data stok berhasil dihapus');
+        } catch (\illuminate\Database\QueryException $e) {
+            return redirect('/stok')->with('error', 'Data stok gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
         }
     }
 }
