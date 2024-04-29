@@ -50,6 +50,11 @@ class UserModel extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function level(): BelongsTo
+    {
+        return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    }
+
     protected $table = 'm_user';
     protected $primaryKey = 'user_id';
     protected $guarded = [];
