@@ -59,4 +59,4 @@ Route::delete('barang/{barang}', [BarangController::class, 'destroy']);
 
 Route::post('/register1', RegisterController::class)->name('register1');
 
-Route::post('/transaksi', [BarangController::class, 'store']);
+Route::post('/barang', [BarangController::class, 'store']);
