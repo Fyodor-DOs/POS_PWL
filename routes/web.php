@@ -14,6 +14,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\FileRenameController;
 use App\Models\User;
 
 
@@ -119,3 +120,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/file-upload', [FileUploadController::class, 'fileUpload']);
 Route::post('/file-upload', [FileUploadController::class, 'prosesfileUpload']);
+
+Route::get('/file-upload-rename', [FileRenameController::class, 'fileUploadRename']);
+Route::post('/file-upload-rename', [FileRenameController::class, 'prosesfileUploadRename']);

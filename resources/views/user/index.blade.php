@@ -35,6 +35,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Foto</th>
                     <th>Username</th>
                     <th>Nama</th>
                     <th>Level Pengguna</th>
@@ -65,6 +66,17 @@
                 orderable: false,
                 searchable: false
             }, {
+            data: "image",
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        if (data !== 'http://127.0.0.1:8000/storage/posts') {
+                            return '<img src="' + data + '" width="100">';
+                        } else {
+                            return '';
+                        }
+                    }            
+                }, {
                 data: "username",
                 className: "",
                 orderable: true, // orderable: true, jika ingin kolom ini bisa diurutkan
@@ -80,7 +92,7 @@
                 orderable: false, // orderable: true, jika ingin kolom ini bisa diurutkan
                 searchable: false // searchable: true, jika ingin kolom ini bisa dicari
             }, {
-                data: "aksi",
+                data: "aksi", 
                 className: "",
                 orderable: false, // orderable: true, jika ingin kolom ini bisa diurutkan
                 searchable: false // searchable: true, jika ingin kolom ini bisa dicari
